@@ -1,0 +1,5 @@
+dataset,model,threshold,n_samples,accuracy,precision,recall,f1,auc_roc,tn,fp,fn,tp
+PhiUSIIL Validation (t=0.50),XGBClassifier,0.5,47159,0.9633,0.9458,0.9926,0.9686,0.9739,18655,1534,199,26771
+PhiUSIIL Validation (t=0.437),XGBClassifier,0.4368,47159,0.9637,0.9449,0.9945,0.969,0.9739,18624,1565,149,26821
+ISCX Cross-Dataset  (t=0.50),XGBClassifier,0.5,15367,0.9728,0.9862,0.9583,0.9721,0.9961,7679,102,316,7270
+ISCX Cross-Dataset  (t=0.437),XGBClassifier,0.4368,15367,0.9733,0.9826,0.9628,0.9726,0.9961,7652,129,282,7304

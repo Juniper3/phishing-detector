@@ -1,0 +1,4 @@
+dataset,model,n_samples,accuracy,precision,recall,f1,auc_roc,tn,fp,fn,tp
+PhiUSIIL (in-sample),XGBClassifier,47159,1.0,1.0,1.0,1.0,1.0,20189,0,0,26970
+ISCX (phishing vs benign),XGBClassifier,15367,0.5063,0.0,0.0,0.0,0.5015,7781,0,7586,0
+ISCX (phishing vs all),XGBClassifier,36707,0.7933,0.0,0.0,0.0,0.5005,29121,0,7586,0
