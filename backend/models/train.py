@@ -24,7 +24,6 @@ import pickle
 import warnings
 import numpy as np
 import pandas as pd
-from collections import OrderedDict
 from pathlib import Path
 
 from sklearn.ensemble import RandomForestClassifier
@@ -45,8 +44,8 @@ if hasattr(sys.stdout, "reconfigure"):
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-# import sets จาก url_extractor เพื่อใช้ใน feature computation
 from backend.features.url_extractor import SUSPICIOUS_TLDS, TARGET_BRANDS, URL_SHORTENERS
+from backend.models.feature_config import FEATURE_MAP, CANONICAL_FEATURES, PHI_LABEL_CANDIDATES
 
 # ─────────────────────────────────────────────
 # Paths
@@ -58,45 +57,11 @@ SAVE_DIR     = ROOT / "backend" / "models" / "saved"
 RESULTS_DIR  = ROOT / "data" / "results"
 
 # ─────────────────────────────────────────────
-# URL-Only Feature Mapping
-#
-# เลือกเฉพาะ features ที่มีใน dataset ทั้งสอง
-# canonical name (url_extractor.py) → (PhiUSIIL column, ISCX column)
-#
-# หมายเหตุ:
-#   num_subdomains: PhiUSIIL=NoOfSubDomain (actual subdomain count)
-#                   ISCX=domain_token_count (dots+1, ค่าสูงกว่า ~2)
-#                   model จะ learn relationship นี้เองจากทั้งสอง dataset
-#   num_equal:      PhiUSIIL=NoOfEqualsInURL (count of '=')
-#                   ISCX=URLQueries_variable (count of query vars)
-#                   สำหรับ URL ทั่วไป: num_equal ≈ URLQueries_variable
+# FEATURE_MAP และ CANONICAL_FEATURES import มาจาก feature_config.py
 # ─────────────────────────────────────────────
 
-FEATURE_MAP: OrderedDict = OrderedDict([
-    ("url_length",         ("URLLength",            "urlLen")),
-    ("hostname_length",    ("DomainLength",          "domainlength")),
-    ("has_ip",             ("IsDomainIP",            "ISIpAddressInDomainName")),
-    ("num_digits",         ("NoOfDegitsInURL",       "URL_DigitCount")),
-    ("digit_ratio",        ("DegitRatioInURL",       "NumberRate_URL")),
-    ("special_char_ratio", ("SpacialCharRatioInURL", "spcharUrl")),
-    ("url_entropy",        ("URLCharProb",           "Entropy_URL")),
-    ("num_subdomains",     ("NoOfSubDomain",         "domain_token_count")),
-    ("num_equal",          ("NoOfEqualsInURL",       "URLQueries_variable")),
-])
-
-# ทดลองเพิ่ม 3 features แต่ revert เนื่องจาก dataset distribution problem
-# (ดูรายละเอียดใน docstring ด้านบน)
-NEW_FEATURES: list[str] = []  # ว่างเปล่า — features อยู่ใน url_extractor แต่ไม่ใช้ใน model
-
-CANONICAL_FEATURES: list[str] = list(FEATURE_MAP.keys())  # 9 features เดิม
-
-# ─────────────────────────────────────────────
-# Label columns ที่เป็นไปได้ใน PhiUSIIL
-# ─────────────────────────────────────────────
-
-_PHI_LABEL_CANDIDATES = ("label", "phishing", "class", "Label", "Phishing", "Class")
-_PHI_DROP             = {"FILENAME", "URL", "url", "Domain", "TLD", "Title",
-                         "filename", "domain", "tld", "title"}
+_PHI_DROP = {"FILENAME", "URL", "url", "Domain", "TLD", "Title",
+             "filename", "domain", "tld", "title"}
 
 
 # ─────────────────────────────────────────────
@@ -197,7 +162,7 @@ def load_phiusiil() -> tuple[np.ndarray, np.ndarray]:
         df = df.rename(columns={"URL": "url"})
 
     # หา label column
-    label_col = next((c for c in _PHI_LABEL_CANDIDATES if c in df.columns), None)
+    label_col = next((c for c in PHI_LABEL_CANDIDATES if c in df.columns), None)
     if label_col is None:
         raise ValueError(f"ไม่พบ label column ใน PhiUSIIL — columns: {df.columns.tolist()}")
     if label_col != "label":
@@ -351,6 +316,7 @@ def run_eval_mode(
     Returns:
         metrics_dict: {model_name: metrics}
         trained_dict: {model_name: model}
+        scalers_dict: {model_name: scaler}
     """
     # Normalize — fit บน train เท่านั้น ป้องกัน data leakage
     scaler  = StandardScaler()

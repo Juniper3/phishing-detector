@@ -24,7 +24,6 @@ import warnings
 import numpy as np
 import pandas as pd
 from pathlib import Path
-from collections import OrderedDict
 
 from sklearn.metrics import (
     accuracy_score, precision_score, recall_score,
@@ -57,24 +56,8 @@ PHIUSIIL_CSV = ROOT / "data" / "raw" / "dataset.csv"
 ISCX_CSV     = ROOT / "data" / "raw" / "iscx_url.csv"
 RESULTS_DIR  = ROOT / "data" / "results"
 
-# ─────────────────────────────────────────────
-# Feature Map — เหมือน train.py ทุกอย่าง
-# canonical (url_extractor.py) → (PhiUSIIL col, ISCX col)
-# ─────────────────────────────────────────────
-
-FEATURE_MAP: OrderedDict = OrderedDict([
-    ("url_length",         ("URLLength",            "urlLen")),
-    ("hostname_length",    ("DomainLength",          "domainlength")),
-    ("has_ip",             ("IsDomainIP",            "ISIpAddressInDomainName")),
-    ("num_digits",         ("NoOfDegitsInURL",       "URL_DigitCount")),
-    ("digit_ratio",        ("DegitRatioInURL",       "NumberRate_URL")),
-    ("special_char_ratio", ("SpacialCharRatioInURL", "spcharUrl")),
-    ("url_entropy",        ("URLCharProb",           "Entropy_URL")),
-    ("num_subdomains",     ("NoOfSubDomain",         "domain_token_count")),
-    ("num_equal",          ("NoOfEqualsInURL",       "URLQueries_variable")),
-])
-
-_PHI_LABEL_CANDIDATES = ("label", "phishing", "class", "Label", "Phishing", "Class")
+sys.path.insert(0, str(ROOT))
+from backend.models.feature_config import FEATURE_MAP, PHI_LABEL_CANDIDATES
 
 
 # ─────────────────────────────────────────────
@@ -121,7 +104,7 @@ def load_phiusiil_val(scaler) -> tuple[np.ndarray, np.ndarray]:
     if "URL" in df.columns and "url" not in df.columns:
         df = df.rename(columns={"URL": "url"})
 
-    label_col = next((c for c in _PHI_LABEL_CANDIDATES if c in df.columns), None)
+    label_col = next((c for c in PHI_LABEL_CANDIDATES if c in df.columns), None)
     if label_col and label_col != "label":
         df = df.rename(columns={label_col: "label"})
 

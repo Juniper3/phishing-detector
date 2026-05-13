@@ -1,0 +1,22 @@
+# Phishing Detector — Backend Dependencies
+# Python 3.13.2
+# ติดตั้ง: pip install -r requirements.txt
+
+# ── API ──────────────────────────────────────
+fastapi==0.115.0
+uvicorn==0.30.1
+pydantic==2.13.4
+
+# ── Machine Learning ─────────────────────────
+numpy==2.0.2
+pandas==2.2.3
+scikit-learn==1.6.1
+xgboost==2.1.3
+shap==0.46.0
+
+# ── Feature Extraction ───────────────────────
+requests==2.32.3
+beautifulsoup4==4.12.3
+
+# ── Visualization (cross_dataset_eval.py) ────
+matplotlib==3.10.9
