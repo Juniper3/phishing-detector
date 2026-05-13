@@ -7,7 +7,7 @@ import HTMLFeaturePanel from './components/HTMLFeaturePanel'
 import FeatureTable from './components/FeatureTable'
 import URLHistory, { useURLHistory } from './components/URLHistory'
 
-const API_URL = 'http://localhost:8001/api/v1/predict'
+const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8001/api/v1/predict'
 
 function App() {
   const [loading, setLoading]           = useState(false)
@@ -36,7 +36,7 @@ function App() {
       if (err.response) {
         setError(err.response.data?.detail ?? 'เกิดข้อผิดพลาดจาก server')
       } else {
-        setError('ไม่สามารถเชื่อมต่อ server ได้ — ตรวจสอบว่า backend รันอยู่ที่ port 8001')
+        setError(`ไม่สามารถเชื่อมต่อ server ได้ — ตรวจสอบว่า backend รันอยู่ที่ ${API_URL}`)
       }
     } finally {
       setLoading(false)
