@@ -16,6 +16,9 @@ data/raw/
 data/processed/
 data/models/
 
+# ยกเว้น saved model ที่ train แล้ว — ขนาดเล็ก (<1MB) จำเป็นสำหรับ deploy
+!backend/models/saved/*.pkl
+
 # Node / React
 node_modules/
 dist/
