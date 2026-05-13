@@ -96,11 +96,9 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS — อนุญาต Vite dev server (5173) และ CRA (3000)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173"],
-    allow_credentials=True,
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
