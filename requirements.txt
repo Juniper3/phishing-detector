@@ -18,5 +18,3 @@ shap==0.46.0
 requests==2.32.3
 beautifulsoup4==4.12.3
 
-# ── Visualization (cross_dataset_eval.py) ────
-matplotlib==3.10.9
