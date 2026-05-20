@@ -1,7 +1,3 @@
-// HTMLFeaturePanel.jsx
-// แสดง HTML features ที่ดึงได้จากเว็บจริง
-// แยก risk indicators (แดง) vs legitimacy indicators (เขียว)
-
 const RISK_FEATURES = new Set([
   'has_login_form',
   'form_action_external',
@@ -39,29 +35,27 @@ function FeatureRow({ name, value }) {
   const isSafe = SAFE_FEATURES.has(name) && value === 1
   const label  = FEATURE_LABELS[name] ?? name
 
-  // กำหนดสีตามความหมายของค่า
-  let valueStyle = 'text-gray-300'
+  let valueStyle = 'text-slate-600'
   let rowStyle   = ''
   let indicator  = null
 
   if (isRisk) {
-    valueStyle = 'text-red-400 font-semibold'
-    rowStyle   = 'bg-red-950/20'
-    indicator  = <span className="text-red-500 text-xs ml-1">⚠</span>
+    valueStyle = 'text-red-600 font-semibold'
+    rowStyle   = 'bg-red-50/70'
+    indicator  = <span className="text-red-400 text-xs ml-1">⚠</span>
   } else if (isSafe) {
-    valueStyle = 'text-green-400 font-semibold'
-    rowStyle   = 'bg-green-950/20'
+    valueStyle = 'text-green-600 font-semibold'
+    rowStyle   = 'bg-green-50/70'
     indicator  = <span className="text-green-500 text-xs ml-1">✓</span>
   }
 
-  // แสดงค่า boolean เป็น Yes/No
   const displayValue = typeof value === 'number' && (value === 0 || value === 1)
     ? (value === 1 ? 'Yes' : 'No')
     : value
 
   return (
-    <div className={`flex items-center justify-between px-3 py-1.5 rounded ${rowStyle}`}>
-      <span className="text-gray-400 text-xs flex items-center gap-1">
+    <div className={`flex items-center justify-between px-3 py-1.5 rounded-lg ${rowStyle}`}>
+      <span className="text-slate-500 text-xs flex items-center gap-0.5">
         {label}
         {indicator}
       </span>
@@ -77,43 +71,39 @@ function HTMLFeaturePanel({ features, status }) {
 
   const entries = Object.entries(features)
 
-  // นับ risk signals
   const riskCount = entries.filter(([k, v]) =>
     RISK_FEATURES.has(k) && (v === 1 || v > 0)
   ).length
 
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-xl p-5 space-y-4">
+    <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4 shadow-sm">
 
-      {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-300">
+        <h3 className="text-sm font-semibold text-slate-700">
           HTML Analysis
         </h3>
         <div className="flex items-center gap-2">
           {riskCount > 0 ? (
-            <span className="text-xs bg-red-900/60 text-red-300 border border-red-800 px-2 py-0.5 rounded">
+            <span className="text-xs bg-red-50 text-red-600 border border-red-200 px-2.5 py-1 rounded-lg font-medium">
               {riskCount} risk signal{riskCount > 1 ? 's' : ''}
             </span>
           ) : (
-            <span className="text-xs bg-green-900/60 text-green-300 border border-green-800 px-2 py-0.5 rounded">
+            <span className="text-xs bg-green-50 text-green-600 border border-green-200 px-2.5 py-1 rounded-lg font-medium">
               No risk signals
             </span>
           )}
         </div>
       </div>
 
-      {/* Feature rows */}
       <div className="space-y-0.5">
         {entries.map(([name, value]) => (
           <FeatureRow key={name} name={name} value={value} />
         ))}
       </div>
 
-      {/* Legend */}
-      <div className="flex gap-4 text-xs text-gray-600 pt-1 border-t border-gray-800">
+      <div className="flex gap-4 text-xs text-slate-400 pt-1 border-t border-slate-100">
         <span className="flex items-center gap-1">
-          <span className="text-red-500">⚠</span> Risk indicator
+          <span className="text-red-400">⚠</span> Risk indicator
         </span>
         <span className="flex items-center gap-1">
           <span className="text-green-500">✓</span> Legitimacy indicator

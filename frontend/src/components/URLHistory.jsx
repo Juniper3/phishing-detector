@@ -1,17 +1,11 @@
-// URLHistory.jsx
-// แสดงประวัติ URL ที่ตรวจสอบแล้ว — เก็บใน localStorage สำหรับ demo thesis
-// Max 20 รายการ, ลบได้ทีละรายการหรือลบทั้งหมด
-
 import { useState, useEffect } from 'react'
 
 const STORAGE_KEY = 'phishing_detector_history'
 const MAX_HISTORY = 20
 
-// ─── Hook สำหรับจัดการ history ───────────────────────
 export function useURLHistory() {
   const [history, setHistory] = useState([])
 
-  // โหลด history จาก localStorage ตอน mount
   useEffect(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY)
@@ -21,13 +15,10 @@ export function useURLHistory() {
     }
   }, [])
 
-  // บันทึก history ทุกครั้งที่เปลี่ยน
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(history))
-    } catch {
-      // localStorage full หรือ private mode — ข้ามได้
-    }
+    } catch {}
   }, [history])
 
   const addEntry = (result) => {
@@ -51,7 +42,6 @@ export function useURLHistory() {
   return { history, addEntry, removeEntry, clearAll }
 }
 
-// ─── Component ────────────────────────────────────────
 function HistoryItem({ entry, onRemove, onRecheck }) {
   const isPhishing = entry.prediction === 'phishing'
   const date = new Date(entry.timestamp)
@@ -63,22 +53,19 @@ function HistoryItem({ entry, onRemove, onRecheck }) {
   })
 
   return (
-    <div className={`group flex items-center gap-3 px-3 py-2.5 rounded-lg border
-      transition-colors hover:border-gray-700
+    <div className={`group flex items-center gap-3 px-3 py-2.5 rounded-lg border transition-colors
       ${isPhishing
-        ? 'border-red-900/50 bg-red-950/10'
-        : 'border-gray-800 bg-gray-900/50'}`}>
+        ? 'border-red-100 bg-red-50/60 hover:border-red-200'
+        : 'border-slate-100 bg-white hover:border-slate-200'}`}>
 
-      {/* Risk icon */}
-      <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs
-        ${isPhishing ? 'bg-red-900/60 text-red-400' : 'bg-green-900/60 text-green-400'}`}>
-        {isPhishing ? '⚠' : '✓'}
+      <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold
+        ${isPhishing ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}`}>
+        {isPhishing ? '!' : '✓'}
       </div>
 
-      {/* URL + meta */}
       <div className="flex-1 min-w-0">
         <p
-          className="text-xs font-mono text-gray-300 truncate cursor-pointer hover:text-white"
+          className="text-xs font-mono text-slate-600 truncate cursor-pointer hover:text-slate-900"
           title={entry.url}
           onClick={() => onRecheck(entry.url)}
         >
@@ -86,23 +73,22 @@ function HistoryItem({ entry, onRemove, onRecheck }) {
         </p>
         <div className="flex items-center gap-2 mt-0.5">
           <span className={`text-xs font-medium
-            ${isPhishing ? 'text-red-400' : 'text-green-400'}`}>
+            ${isPhishing ? 'text-red-600' : 'text-green-600'}`}>
             {isPhishing ? 'Phishing' : 'Legitimate'}
           </span>
-          <span className="text-gray-600 text-xs">·</span>
-          <span className="text-gray-600 text-xs font-mono">
+          <span className="text-slate-300 text-xs">·</span>
+          <span className="text-slate-400 text-xs font-mono">
             {(entry.confidence * 100).toFixed(0)}%
           </span>
-          <span className="text-gray-600 text-xs">·</span>
-          <span className="text-gray-700 text-xs">{dateStr} {timeStr}</span>
+          <span className="text-slate-300 text-xs">·</span>
+          <span className="text-slate-400 text-xs">{dateStr} {timeStr}</span>
         </div>
       </div>
 
-      {/* Delete button — แสดงเมื่อ hover */}
       <button
         onClick={() => onRemove(entry.id)}
-        className="flex-shrink-0 opacity-0 group-hover:opacity-100 text-gray-600
-          hover:text-red-400 transition-all text-xs px-1"
+        className="flex-shrink-0 opacity-0 group-hover:opacity-100 text-slate-400
+          hover:text-red-500 transition-all text-xs px-1"
         title="ลบรายการนี้"
       >
         ✕
@@ -118,52 +104,49 @@ function URLHistory({ history, onRemove, onClear, onRecheck, isOpen, onToggle })
   if (history.length === 0 && !isOpen) return null
 
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+    <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
 
-      {/* Header — คลิกเพื่อ toggle */}
       <button
         onClick={onToggle}
         className="w-full flex items-center justify-between px-4 py-3
-          hover:bg-gray-800/40 transition-colors"
+          hover:bg-slate-50 transition-colors"
       >
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-gray-300">
+          <span className="text-sm font-semibold text-slate-700">
             URL History
           </span>
           {history.length > 0 && (
-            <span className="text-xs bg-gray-800 text-gray-400 px-2 py-0.5 rounded-full font-mono">
+            <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-mono">
               {history.length}
             </span>
           )}
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Summary badges */}
           {history.length > 0 && (
             <div className="flex gap-2">
               {phishCount > 0 && (
-                <span className="text-xs text-red-400 font-mono">
-                  {phishCount} ⚠
+                <span className="text-xs text-red-500 font-medium">
+                  {phishCount} phishing
                 </span>
               )}
               {legitCount > 0 && (
-                <span className="text-xs text-green-400 font-mono">
-                  {legitCount} ✓
+                <span className="text-xs text-green-600 font-medium">
+                  {legitCount} legit
                 </span>
               )}
             </div>
           )}
-          <span className="text-gray-600 text-xs">
+          <span className="text-slate-400 text-xs">
             {isOpen ? '▲' : '▼'}
           </span>
         </div>
       </button>
 
-      {/* History list */}
       {isOpen && (
-        <div className="border-t border-gray-800">
+        <div className="border-t border-slate-100">
           {history.length === 0 ? (
-            <p className="text-gray-600 text-xs text-center py-6">
+            <p className="text-slate-400 text-xs text-center py-6">
               ยังไม่มีประวัติ — ลองตรวจสอบ URL แรก
             </p>
           ) : (
@@ -179,14 +162,13 @@ function URLHistory({ history, onRemove, onClear, onRecheck, isOpen, onToggle })
                 ))}
               </div>
 
-              {/* Clear all */}
-              <div className="px-4 py-2.5 border-t border-gray-800 flex items-center justify-between">
-                <p className="text-xs text-gray-600">
+              <div className="px-4 py-2.5 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
+                <p className="text-xs text-slate-400">
                   คลิก URL เพื่อตรวจสอบซ้ำ
                 </p>
                 <button
                   onClick={onClear}
-                  className="text-xs text-gray-600 hover:text-red-400 transition-colors"
+                  className="text-xs text-slate-400 hover:text-red-500 transition-colors"
                 >
                   ล้างทั้งหมด
                 </button>

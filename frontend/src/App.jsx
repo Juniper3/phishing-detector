@@ -49,29 +49,31 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen bg-slate-50">
 
       {/* ─── Header ─── */}
-      <header className="border-b border-gray-800 sticky top-0 z-10 bg-gray-950/95 backdrop-blur">
-        <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
+        <div className="max-w-2xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="text-red-500 text-xl select-none">⚠</span>
+            <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
+              <span className="text-red-600 text-sm select-none">🛡</span>
+            </div>
             <div>
-              <h1 className="text-lg font-bold tracking-wide">Phishing Detector</h1>
-              <p className="text-gray-500 text-xs">XGBoost + SHAP · IS DPU Research</p>
+              <h1 className="text-base font-semibold text-slate-800">Phishing Detector</h1>
+              <p className="text-slate-400 text-xs">XGBoost + SHAP · IS DPU Research</p>
             </div>
           </div>
 
           {/* HTML Analysis Toggle */}
           <label className="flex items-center gap-2 cursor-pointer select-none">
-            <span className="text-xs text-gray-400">HTML</span>
+            <span className="text-xs text-slate-500 font-medium">HTML</span>
             <div
               onClick={() => setFetchHtml(v => !v)}
-              className={`relative w-10 h-5 rounded-full transition-colors duration-200 cursor-pointer
-                ${fetchHtml ? 'bg-blue-600' : 'bg-gray-700'}`}
+              className={`relative w-9 h-5 rounded-full transition-colors duration-200 cursor-pointer
+                ${fetchHtml ? 'bg-blue-500' : 'bg-slate-300'}`}
             >
-              <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow
-                transition-all duration-200 ${fetchHtml ? 'left-5' : 'left-0.5'}`}
+              <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm
+                transition-all duration-200 ${fetchHtml ? 'left-4' : 'left-0.5'}`}
               />
             </div>
           </label>
@@ -79,28 +81,28 @@ function App() {
       </header>
 
       {/* ─── Main ─── */}
-      <main className="max-w-3xl mx-auto px-4 py-8 space-y-5">
+      <main className="max-w-2xl mx-auto px-6 py-8 space-y-5">
 
-        <p className="text-gray-500 text-sm">
+        <p className="text-slate-500 text-sm">
           วิเคราะห์ URL ว่าเป็น phishing หรือ legitimate
           ด้วย machine learning พร้อม SHAP explanation
           {fetchHtml && (
-            <span className="ml-2 text-blue-400 text-xs">· HTML mode ON</span>
+            <span className="ml-2 text-blue-500 text-xs font-medium">· HTML mode เปิดอยู่</span>
           )}
         </p>
 
         <URLInput onDetect={handleDetect} loading={loading} />
 
         {loading && (
-          <div className="flex items-center gap-3 text-gray-400 text-sm">
-            <div className="w-4 h-4 border-2 border-gray-600 border-t-blue-500
+          <div className="flex items-center gap-2.5 text-slate-500 text-sm">
+            <div className="w-4 h-4 border-2 border-slate-300 border-t-blue-500
               rounded-full animate-spin" />
             {fetchHtml ? 'กำลังวิเคราะห์ URL และดึง HTML...' : 'กำลังวิเคราะห์ URL...'}
           </div>
         )}
 
         {error && (
-          <div className="bg-red-950/60 border border-red-800 text-red-300
+          <div className="bg-red-50 border border-red-200 text-red-700
             rounded-lg px-4 py-3 text-sm">
             {error}
           </div>
@@ -116,13 +118,13 @@ function App() {
               <button
                 onClick={() => setShowFeatures(v => !v)}
                 className="w-full flex items-center justify-between px-4 py-3
-                  bg-gray-900 border border-gray-800 rounded-xl
-                  hover:bg-gray-800/60 transition-colors"
+                  bg-white border border-slate-200 rounded-xl
+                  hover:bg-slate-50 transition-colors"
               >
-                <span className="text-sm text-gray-300 font-medium">
+                <span className="text-sm text-slate-700 font-medium">
                   URL Feature Extraction
                 </span>
-                <span className="text-xs text-gray-600">
+                <span className="text-xs text-slate-400">
                   {showFeatures ? '▲ ซ่อน' : '▼ แสดง 9 features'}
                 </span>
               </button>
@@ -144,14 +146,14 @@ function App() {
               />
             )}
             {result.html_status === 'timeout' && (
-              <div className="bg-yellow-950/40 border border-yellow-800
-                text-yellow-300 rounded-lg px-4 py-3 text-xs">
+              <div className="bg-amber-50 border border-amber-200
+                text-amber-700 rounded-lg px-4 py-3 text-xs">
                 ⏱ HTML analysis timeout — ใช้ URL features เท่านั้น
               </div>
             )}
             {result.html_status === 'error' && (
-              <div className="bg-gray-900 border border-gray-700
-                text-gray-400 rounded-lg px-4 py-3 text-xs">
+              <div className="bg-slate-100 border border-slate-200
+                text-slate-500 rounded-lg px-4 py-3 text-xs">
                 ℹ HTML ดึงไม่ได้ — ใช้ URL features เท่านั้น
               </div>
             )}

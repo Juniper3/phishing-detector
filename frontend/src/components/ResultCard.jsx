@@ -1,21 +1,21 @@
-// ResultCard.jsx
-// แสดงผล prediction — สีแดง = Phishing, สีเขียว = Legitimate
-
-// Risk score bar 0-100
 function RiskBar({ score }) {
-  // เกิน 60 = สูง (แดง), 30-60 = กลาง (เหลือง), ต่ำกว่า 30 = ต่ำ (เขียว)
   const barColor =
     score >= 60 ? 'bg-red-500'
-    : score >= 30 ? 'bg-yellow-500'
+    : score >= 30 ? 'bg-amber-400'
     : 'bg-green-500'
 
+  const trackColor =
+    score >= 60 ? 'bg-red-100'
+    : score >= 30 ? 'bg-amber-100'
+    : 'bg-green-100'
+
   return (
-    <div className="space-y-1">
-      <div className="flex justify-between text-xs text-gray-400">
+    <div className="space-y-1.5">
+      <div className="flex justify-between text-xs text-slate-500">
         <span>Risk Score</span>
-        <span className="font-mono">{score} / 100</span>
+        <span className="font-mono font-medium text-slate-700">{score} / 100</span>
       </div>
-      <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+      <div className={`h-2 ${trackColor} rounded-full overflow-hidden`}>
         <div
           className={`h-full rounded-full transition-all duration-700 ${barColor}`}
           style={{ width: `${score}%` }}
@@ -28,41 +28,42 @@ function RiskBar({ score }) {
 function ResultCard({ result }) {
   const isPhishing = result.prediction === 'phishing'
 
-  // สีตาม prediction
-  const borderColor = isPhishing ? 'border-red-800'   : 'border-green-800'
-  const badgeStyle  = isPhishing
-    ? 'bg-red-900/60 text-red-300 border border-red-700'
-    : 'bg-green-900/60 text-green-300 border border-green-700'
-  const labelText   = isPhishing ? '⚠ PHISHING' : '✓ LEGITIMATE'
+  const cardStyle = isPhishing
+    ? 'bg-red-50 border-red-200'
+    : 'bg-green-50 border-green-200'
+
+  const badgeStyle = isPhishing
+    ? 'bg-red-100 text-red-700 border border-red-300'
+    : 'bg-green-100 text-green-700 border border-green-300'
+
+  const labelText = isPhishing ? 'Phishing' : 'Legitimate'
+  const icon      = isPhishing ? '⚠' : '✓'
 
   const confidencePct = (result.confidence * 100).toFixed(1)
 
   return (
-    <div className={`bg-gray-900 border ${borderColor} rounded-xl p-5 space-y-4`}>
+    <div className={`border rounded-xl p-5 space-y-4 ${cardStyle}`}>
 
-      {/* URL ที่ตรวจสอบ */}
-      <p className="text-gray-500 text-xs font-mono truncate" title={result.url}>
+      <p className="text-slate-500 text-xs font-mono truncate" title={result.url}>
         {result.url}
       </p>
 
-      {/* Prediction badge + Confidence */}
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <span className={`text-sm font-bold tracking-widest px-3 py-1 rounded ${badgeStyle}`}>
-          {labelText}
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <span className={`inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded-lg ${badgeStyle}`}>
+          <span>{icon}</span>
+          {labelText.toUpperCase()}
         </span>
         <div className="text-right">
-          <span className="text-gray-400 text-xs block">Confidence</span>
-          <span className="text-white font-semibold text-lg leading-none">
+          <span className="text-slate-400 text-xs block">Confidence</span>
+          <span className={`font-bold text-2xl leading-none ${isPhishing ? 'text-red-600' : 'text-green-600'}`}>
             {confidencePct}%
           </span>
         </div>
       </div>
 
-      {/* Risk score bar */}
       <RiskBar score={result.risk_score} />
 
-      {/* Processing time */}
-      <p className="text-gray-700 text-xs text-right font-mono">
+      <p className="text-slate-400 text-xs text-right font-mono">
         {result.processing_time_ms} ms
       </p>
     </div>
